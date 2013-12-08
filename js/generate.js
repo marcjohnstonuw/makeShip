@@ -1,6 +1,6 @@
 var createRoom = function (x, y, direction) {
-    var width = Math.floor(Math.random() * 4 + 4),
-        height = Math.floor(Math.random() * 4 + 4),
+    var width = Math.floor(Math.random() * 4 + 2),
+        height = Math.floor(Math.random() * 4 + 2),
         x0,
         y0,
         ret = [];

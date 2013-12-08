@@ -20,6 +20,8 @@ for (var i = 0; i < MAP_HEIGHT; i++) {
 //start with cockpit
 mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile([WALL, DOOR, WALL, WALL]);
 var newDoors = createRoom(COCKPIT_X, COCKPIT_Y, EAST);
+var nextRoom = newDoors[0];
+createRoom(nextRoom.x, nextRoom.y, nextRoom.direction);
 
 var printMap = function () {
     var out = ['\n   '];
