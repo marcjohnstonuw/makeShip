@@ -2,7 +2,8 @@ var createRoom = function (x, y, direction) {
     var width = Math.floor(Math.random() * 4 + 4),
         height = Math.floor(Math.random() * 4 + 4),
         x0,
-        y0;
+        y0,
+        ret = [];
     
     switch (direction) {
         case NORTH:
@@ -22,7 +23,7 @@ var createRoom = function (x, y, direction) {
             y0 = y;
             break;
         default:
-            return;
+            return ret;
     };
     
     //set all tiles in the room to 'open' on all sides
@@ -32,13 +33,33 @@ var createRoom = function (x, y, direction) {
         }
     }
     
-    //go along walls, mark them
+    //go along walls, mark them.  Possibly as doors
     for (var i = 0; i < width; i++) {
-        mapRooms[y0][x0 + i].directions[NORTH] = 0;   
-        mapRooms[y0 + height - 1][x0 + i].directions[SOUTH] = 0;
+        if (Math.random() > 0.75) {
+            mapRooms[y0][x0 + i].directions[NORTH] = 1;   
+        } else {
+            mapRooms[y0][x0 + i].directions[NORTH] = 0;   
+        }
+        if (Math.random() > 0.75) {
+            mapRooms[y0 + height - 1][x0 + i].directions[SOUTH] = 1;
+        } else {
+            mapRooms[y0 + height - 1][x0 + i].directions[SOUTH] = 0;
+        }
     }
     for (var i = 0; i < height; i++) {
-        mapRooms[y0 + i][x0].directions[WEST] = 0;
-        mapRooms[y0 + i][x0 + width - 1].directions[EAST] = 0;
+        if (Math.random() > 0.75) {
+            mapRooms[y0 + i][x0].directions[WEST] = 1;
+        } else {
+            mapRooms[y0 + i][x0].directions[WEST] = 0;
+        }
+        if (Math.random() > 0.75) {
+            mapRooms[y0 + i][x0 + width - 1].directions[EAST] = 1;
+        } else {
+            mapRooms[y0 + i][x0 + width - 1].directions[EAST] = 0;
+        }
     }
+
+    //mark door to previous room
+    mapRooms[y0][x0].directions[(direction + 2) % 4] = 1;
+
 };
