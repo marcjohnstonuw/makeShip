@@ -19,15 +19,20 @@ for (var i = 0; i < MAP_HEIGHT; i++) {
 
 //start with cockpit
 mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile([WALL, DOOR, WALL, WALL]);
-createRoom(COCKPIT_X, COCKPIT_Y, EAST);
+var newDoors = createRoom(COCKPIT_X, COCKPIT_Y, EAST);
 
 var printMap = function () {
-    var out = ['\n+'];
+    var out = ['\n   '];
+    for (var j = 0; j < MAP_WIDTH; j++) {
+        (j < 10) ? out.push('   ' + j + '  |') : out.push('  ' + j + '  |') ;
+    }
+    out.push('\n  +');
     for (var j = 0; j < MAP_WIDTH; j++) {
         out.push('------+');
     }
     out.push('\n');
     for (var i = 0; i < MAP_HEIGHT; i++) {
+        (i < 10) ? out.push(i + ' ') : out.push(i);
         for (var j = 0; j < MAP_WIDTH; j++) {
             if(mapRooms[i][j] instanceof Tile) {
                 out.push('| ');
@@ -39,7 +44,7 @@ var printMap = function () {
                 out.push('| XXXX ');
             }
         }
-        out.push('|\n+')
+        out.push('|\n  +')
         for (var j = 0; j < MAP_WIDTH; j++) {
             out.push('------+');
         }
@@ -48,3 +53,4 @@ var printMap = function () {
     console.log(out.join(''));
 };
 printMap();
+console.dir(newDoors);
