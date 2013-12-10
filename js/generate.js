@@ -19,8 +19,8 @@ var processBorderTile = function (x, y) {
         }
     }
     //south wall
-    if (mapRooms[y+1][x] instanceof Tile && y < MAP_HEIGHT - 1) {
-        if (mapRooms[y][x].id !== mapRooms[y+1][x].id) {
+    if (y < MAP_HEIGHT - 1) {
+        if (mapRooms[y+1][x] instanceof Tile && mapRooms[y][x].id !== mapRooms[y+1][x].id) {
             if (Math.random() > REDUNDANT_DOOR) {
                 mapRooms[y][x].directions[SOUTH] = 1;
                 mapRooms[y+1][x].directions[NORTH] = 1;
@@ -31,8 +31,8 @@ var processBorderTile = function (x, y) {
         }
     }
     //east wall
-    if (mapRooms[y][x+1] instanceof Tile && x < MAP_WIDTH - 1) {
-        if (mapRooms[y][x].id !== mapRooms[y][x+1].id) {
+    if (x < MAP_WIDTH - 1) {
+        if (mapRooms[y][x+1] instanceof Tile && mapRooms[y][x].id !== mapRooms[y][x+1].id) {
             if (Math.random() > REDUNDANT_DOOR) {
                 mapRooms[y][x].directions[EAST] = 1;
                 mapRooms[y][x+1].directions[WEST] = 1;
@@ -43,8 +43,8 @@ var processBorderTile = function (x, y) {
         }
     }
     //west wall
-    if (mapRooms[y][x-1] instanceof Tile && x > 0) {
-        if (mapRooms[y][x].id !== mapRooms[y][x-1].id) {
+    if (x > 0) {
+        if (mapRooms[y][x-1] instanceof Tile && mapRooms[y][x-1].id !== mapRooms[y][x].id) {
             if (Math.random() > REDUNDANT_DOOR) {
                 mapRooms[y][x].directions[WEST] = 1;
                 mapRooms[y][x-1].directions[EAST] = 1;
@@ -63,8 +63,7 @@ var createRoom = function (x, y, direction) {
         y0,
         landingX,
         landingY,
-        ret = [],
-        roomID = getRoomID();
+        ret = [];
     
     switch (direction) {
         case NORTH:
@@ -95,10 +94,11 @@ var createRoom = function (x, y, direction) {
             return ret;
     };
 
-
     if (mapRooms[landingY][landingX] instanceof Tile) {
         return;
     }
+
+    roomID = getRoomID();
     
     //set all tiles in the room to 'open' on all sides
     for (var i = 0; i < width; i++) {
