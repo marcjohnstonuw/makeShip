@@ -10,8 +10,7 @@ var processBorderTile = function (x, y) {
         //if this is an edge, maybe make a door to the next room, otherwise maybe make a new door
         if (mapRooms[y-1][x] instanceof Tile && mapRooms[y][x].id !== mapRooms[y-1][x].id) {
             if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[NORTH] = 1;
-                mapRooms[y-1][x].directions[SOUTH] = 1;
+                mapRooms[y][x].directions[NORTH] = mapRooms[y-1][x].directions[SOUTH] = 1;
             }
         } else if (!(mapRooms[y-1][x] instanceof Tile) && Math.random() > NEW_DOOR) {
             mapRooms[y][x].directions[NORTH] = 1;
@@ -22,8 +21,7 @@ var processBorderTile = function (x, y) {
     if (y < MAP_HEIGHT - 1) {
         if (mapRooms[y+1][x] instanceof Tile && mapRooms[y][x].id !== mapRooms[y+1][x].id) {
             if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[SOUTH] = 1;
-                mapRooms[y+1][x].directions[NORTH] = 1;
+                mapRooms[y][x].directions[SOUTH] = mapRooms[y+1][x].directions[NORTH] = 1;
             }
         } else if (!(mapRooms[y+1][x] instanceof Tile) && Math.random() > NEW_DOOR) {
             mapRooms[y][x].directions[SOUTH] = 1;
@@ -34,8 +32,7 @@ var processBorderTile = function (x, y) {
     if (x < MAP_WIDTH - 1) {
         if (mapRooms[y][x+1] instanceof Tile && mapRooms[y][x].id !== mapRooms[y][x+1].id) {
             if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[EAST] = 1;
-                mapRooms[y][x+1].directions[WEST] = 1;
+                mapRooms[y][x].directions[EAST] = mapRooms[y][x+1].directions[WEST] = 1;
             }
         } else if (!(mapRooms[y][x+1] instanceof Tile) && Math.random() > NEW_DOOR) {
             mapRooms[y][x].directions[EAST] = 1;
@@ -46,8 +43,7 @@ var processBorderTile = function (x, y) {
     if (x > 0) {
         if (mapRooms[y][x-1] instanceof Tile && mapRooms[y][x-1].id !== mapRooms[y][x].id) {
             if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[WEST] = 1;
-                mapRooms[y][x-1].directions[EAST] = 1;
+                mapRooms[y][x].directions[WEST] = mapRooms[y][x-1].directions[EAST] = 1;
             }
         } else if (!(mapRooms[y][x-1] instanceof Tile) && Math.random() > NEW_DOOR) {
             mapRooms[y][x].directions[WEST] = 1;
