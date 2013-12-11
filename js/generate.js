@@ -4,6 +4,23 @@ var getRoomID = function () {
     return nextRoomID++;
 };
 
+var getMaxRoomHeight = function (x, y, width, height) {
+    var height = 1;
+};
+
+var getMaxRoomWidth = function (x, y, width, height) {
+    var ret = 1;
+    for (var i = 0; i < width; i++) {
+        for (var j = 0; j < height; j++) {
+            if (mapRooms[y + j][x + i] instanceof Tile) {
+                return i + 1;
+            }
+        }
+        ret += 1;
+    }
+    return width;
+};
+
 var processBorderTile = function (x, y) {
     //north wall
     if (y > 0) {
@@ -87,12 +104,14 @@ var createRoom = function (x, y, direction) {
             landingY = y;
             break;
         default:
-            return ret;
+            return false;
     };
 
     if (mapRooms[landingY][landingX] instanceof Tile) {
-        return;
+        return false;
     }
+
+    width = getMaxRoomWidth(x0, y0, width, height);
 
     roomID = getRoomID();
     
@@ -158,8 +177,8 @@ var createRoom = function (x, y, direction) {
     }
 
     //mark door to previous room
-    mapRooms[y0][x0].directions[(direction + 2) % 4] = 1;
+    mapRooms[landingY][landingX].directions[(direction + 2) % 4] = 1;
 
     //return rooms for adding
-    return ret;
+    return true;
 };
