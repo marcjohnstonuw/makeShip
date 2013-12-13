@@ -5,7 +5,16 @@ var getRoomID = function () {
 };
 
 var getMaxRoomHeight = function (x, y, width, height) {
-    var height = 1;
+    var ret = 1;
+    for (var i = 0; i < height; i++) {
+        for (var j = 0; j < width; j++) {
+            if (mapRooms[y - i - 1][x + j] instanceof Tile) {
+                return i;   
+            }
+        }
+        ret += 1;
+    }
+    return height;
 };
 
 var getMaxRoomWidth = function (x, y, width, height) {
@@ -13,7 +22,7 @@ var getMaxRoomWidth = function (x, y, width, height) {
     for (var i = 0; i < width; i++) {
         for (var j = 0; j < height; j++) {
             if (mapRooms[y + j][x + i] instanceof Tile) {
-                return i + 1;
+                return i;
             }
         }
         ret += 1;
@@ -69,7 +78,7 @@ var processBorderTile = function (x, y) {
     }
 };
 
-var createRoom = function (x, y, direction) {
+createRoom = function (x, y, direction) {
     var width = Math.floor(Math.random() * 4 + 3),
         height = Math.floor(Math.random() * 4 + 3),
         x0,
@@ -80,6 +89,7 @@ var createRoom = function (x, y, direction) {
     
     switch (direction) {
         case NORTH:
+            height = getMaxRoomHeight(x, y, width, height);
             x0 = x;
             y0 = y - height;
             landingX = x;
