@@ -4,9 +4,10 @@ var getRoomID = function () {
     return nextRoomID++;
 };
 
-var getMaxRoomHeight = function (x, y, width, height) {
+var getMaxRoomHeight = function (x, y, width, height, up) {
     var ret = 1;
-    for (var i = 0; i < height; i++) {
+    var direction = up ? -1 : 1;
+    for (var i = 0; i < height; i = i + direction) {
         for (var j = 0; j < width; j++) {
             if (mapRooms[y - i - 1][x + j] instanceof Tile) {
                 return i;   
@@ -17,9 +18,10 @@ var getMaxRoomHeight = function (x, y, width, height) {
     return height;
 };
 
-var getMaxRoomWidth = function (x, y, width, height) {
+var getMaxRoomWidth = function (x, y, width, height, right) {
+    var direction = right ? 1 : -1;
     var ret = 1;
-    for (var i = 0; i < width; i++) {
+    for (var i = 0; i < width; i = i + direction) {
         for (var j = 0; j < height; j++) {
             if (mapRooms[y + j][x + i] instanceof Tile) {
                 return i;
@@ -89,13 +91,14 @@ createRoom = function (x, y, direction) {
     
     switch (direction) {
         case NORTH:
-            height = getMaxRoomHeight(x, y, width, height);
+            height = getMaxRoomHeight(x, y, width, height, true);
             x0 = x;
             y0 = y - height;
             landingX = x;
             landingY = y - 1;
             break;
         case EAST:
+            width = getMaxRoomWidth(x0, y0, width, height, true);
             x0 = x + 1;
             y0 = y;
             landingX = x + 1;
@@ -121,7 +124,6 @@ createRoom = function (x, y, direction) {
         return false;
     }
 
-    width = getMaxRoomWidth(x0, y0, width, height);
 
     roomID = getRoomID();
     
