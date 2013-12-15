@@ -69,19 +69,6 @@ for (var i = 0; i < MAP_HEIGHT; i++) {
     }
 }
 
-//start with cockpit
-mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
-createRoom(COCKPIT_X, COCKPIT_Y, EAST);
-for (var i = 0; i < 5; i++) {
-    var nextRoom = newDoors.pop();
-    if (!createRoom(nextRoom.x, nextRoom.y, nextRoom.direction)) {
-        i--;
-    }
-}
-
-printMap();
-console.dir(newDoors);
-
 drawMap = function () {
     var canvas = document.getElementById('mainCanvas');
     if (canvas.getContext){
@@ -119,6 +106,21 @@ drawMap = function () {
         }
     }
 };
+
+
+//start with cockpit
+mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
+createRoom(COCKPIT_X, COCKPIT_Y, EAST);
+for (var i = 0; i < 4; i++) {
+    var nextRoom = newDoors.pop();
+    if (!createRoom(nextRoom.x, nextRoom.y, nextRoom.direction)) {
+        i--;
+    }
+}
+
+printMap();
+console.dir(newDoors);
+
 
 $(document).ready(function () {
     drawMap();
