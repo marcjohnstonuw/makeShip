@@ -1,9 +1,9 @@
-Math.seedrandom('42');
+Math.seedrandom('43');
 for (var i = 0; i < 10; i++) {
     console.log(Math.random());
 }
 
-MAP_WIDTH = 20,
+MAP_WIDTH = 40,
 MAP_HEIGHT = 30,
 COCKPIT_X = 5,
 COCKPIT_Y = 10,
@@ -11,8 +11,8 @@ TILE_SIZE = 20;
 
 newDoors = [];
 
-NEW_DOOR = 0.7;
-REDUNDANT_DOOR = 0.7;
+NEW_DOOR = 0.8;
+REDUNDANT_DOOR = 0.87;
 
 var roomColors = {
     1: {r: 255, g: 0, b: 0},
@@ -41,7 +41,7 @@ printMap = function () {
         (i < 10) ? out.push(i + ' ') : out.push(i);
         for (var j = 0; j < MAP_WIDTH; j++) {
             if(mapRooms[i][j] instanceof Tile) {
-                out.push('| ' + mapRooms[i][j].id + ':');
+                mapRooms[i][j].id < 10 ? out.push('| ' + mapRooms[i][j].id + ':') : out.push('|' + mapRooms[i][j].id + ':');
                 for (var k = 0; k < 4; k++) {
                     out.push(mapRooms[i][j].directions[k]);  
                 }
@@ -107,21 +107,36 @@ drawMap = function () {
     }
 };
 
-
-//start with cockpit
-mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
-createRoom(COCKPIT_X, COCKPIT_Y, EAST);
-for (var i = 0; i < 4; i++) {
-    var nextRoom = newDoors.pop();
-    if (!createRoom(nextRoom.x, nextRoom.y, nextRoom.direction)) {
-        i--;
+another = function (times) {
+    var cond = false;
+    while (!cond) {
+      if (newDoors.length === 0) break;
+        var nextRoom = newDoors.pop();
+        cond = createRoom(nextRoom.x, nextRoom.y, nextRoom.direction)
+    }
+    drawMap();
+    if (times > 0) {
+        setTimeout(function () {another(times - 1)}, 0);
     }
 }
+
+
 
 printMap();
 console.dir(newDoors);
 
 
 $(document).ready(function () {
-    drawMap();
+//start with cockpit
+mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
+createRoom(COCKPIT_X, COCKPIT_Y, EAST);
+    another(100);
+
+    /*
+  if (newDoors.length === 0) break;
+    var nextRoom = newDoors.pop();
+    if (!createRoom(nextRoom.x, nextRoom.y, nextRoom.direction)) {
+        i--;
+    }
+    */
 });

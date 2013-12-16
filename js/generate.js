@@ -4,41 +4,17 @@ var getRoomID = function () {
     return nextRoomID++;
 };
 
-var getMaxRoomHeight = function (x, y, width, height, up) {
-    var direction = up ? -1 : 1;
-    for (var i = 0; Math.abs(i) < height; i = i + direction) {
-        for (var j = 0; j < width; j++) {
-            if (mapRooms[y + i][x + j] instanceof Tile) {
-                return Math.abs(i);   
-            }
-        }
-    }
-    return height;
-};
-
-var getMaxRoomWidth = function (x, y, width, height, right) {
-    var direction = right ? 1 : -1;
-    for (var i = 0; Math.abs(i) <= width; i = i + direction) {
-        for (var j = 0; j < height; j++) {
-            if (mapRooms[y + j][x + i] instanceof Tile) {
-                return Math.abs(i);
-            }
-        }
-    }
-    return width;
-};
-
 roomDimensionsUpRight = function (x, y, width, height) {
     var ret = {
-        width: width,
-        height: height
+        width: Math.min(MAP_WIDTH - x, width),
+        height: Math.min(y + 1, height)
     };
-    for (var i = 0; i < height; i++) {
+    for (var i = 0; i < ret.height; i++) {
         if (mapRooms[y - i][x] instanceof Tile) {
             ret.height = i;
             break;
         }
-        for (var j = 1; j < width; j++) {
+        for (var j = 1; j < ret.width; j++) {
             if (mapRooms[y - i][x + j] instanceof Tile) {
                 ret.width = Math.min(ret.width, j);
                 break;
@@ -50,15 +26,15 @@ roomDimensionsUpRight = function (x, y, width, height) {
 
 roomDimensionDownRight = function (x, y, width, height) {
     var ret = {
-        width: width,
-        height: height
+        width: Math.min(MAP_WIDTH - x, width),
+        height: Math.min(MAP_HEIGHT - y, height)
     };
-    for (var i = 0; i < height; i++) {
+    for (var i = 0; i < ret.height; i++) {
         if (mapRooms[y + i][x] instanceof Tile) {
             ret.height = i;
             break;
         }
-        for (var j = 0; j < width; j++) {
+        for (var j = 0; j < ret.width; j++) {
             if (mapRooms[y + i][x + j] instanceof Tile) {
                 ret.width = Math.min(ret.width, j);
                 break;
@@ -70,15 +46,15 @@ roomDimensionDownRight = function (x, y, width, height) {
 
 roomDimensionsRightDown = function (x, y, width, height) {
     var ret = {
-        width: width,
-        height: height
+        width: Math.min(MAP_WIDTH - x, width),
+        height: Math.min(MAP_HEIGHT - y, height)
     };
-    for (var i = 0; i < width; i++) {
+    for (var i = 0; i < ret.width; i++) {
         if (mapRooms[y][x + i] instanceof Tile) {
             ret.width = i;
             break;
         }
-        for (var j = 0; j < height; j++) {
+        for (var j = 0; j < ret.height; j++) {
             if (mapRooms[y + j][x + i] instanceof Tile) {
                 ret.height = Math.min(ret.height, j);
                 break;
@@ -90,15 +66,15 @@ roomDimensionsRightDown = function (x, y, width, height) {
 
 roomDimensionsLeftDown = function (x, y, width, height) {
     var ret = {
-        width: width,
-        height: height
+        width: Math.min(x + 1, width),
+        height: Math.min(MAP_HEIGHT - y, height)
     };
-    for (var i = 0; i < width; i++) {
+    for (var i = 0; i < ret.width; i++) {
         if (mapRooms[y][x - i] instanceof Tile) {
             ret.width = i;
             break;
         }
-        for (var j = 0; j < height; j++) {
+        for (var j = 0; j < ret.height; j++) {
             if (mapRooms[y + j][x - i] instanceof Tile) {
                 ret.height = Math.min(ret.height, j);
                 break;
@@ -157,7 +133,12 @@ var processBorderTile = function (x, y) {
 };
 
 createRoom = function (x, y, direction) {
-    console.log('creating room, x:' + x + ' y:' + y + ' direction:' + direction)
+
+    if (x === 0 && direction === WEST || x === MAP_WIDTH - 1 && direction === EAST
+            || y === 0 && direction === NORTH || y === MAP_HEIGHT - 1 && direction  === SOUTH) {
+        return false;
+    }
+
     var width = Math.floor(Math.random() * 4 + 3),
         height = Math.floor(Math.random() * 4 + 3),
         x0,
@@ -171,8 +152,6 @@ createRoom = function (x, y, direction) {
             var roomDim = roomDimensionsUpRight(x, y - 1, width, height);
             width = roomDim.width;
             height = roomDim.height;
-            //width = getMaxRoomWidth(x, y - 1, width, height, true);
-            //height = getMaxRoomHeight(x, y - 1, width, height, true);
             x0 = x;
             y0 = y - height;
             landingX = x;
@@ -182,8 +161,6 @@ createRoom = function (x, y, direction) {
             var roomDim = roomDimensionsRightDown(x + 1, y, width, height);
             height = roomDim.height;
             width = roomDim.width;
-            //height = getMaxRoomHeight(x + 1, y, width, height, false);
-            //width = getMaxRoomWidth(x + 1, y, width, height, true);
             x0 = x + 1;
             y0 = y;
             landingX = x + 1;
@@ -193,8 +170,6 @@ createRoom = function (x, y, direction) {
             var roomDim = roomDimensionDownRight(x, y + 1, width, height);
             width = roomDim.width;
             height = roomDim.height;
-            //height = getMaxRoomHeight(x, y + 1, width, height, false);
-            //width = getMaxRoomWidth(x, y + 1, width, height, true);
             x0 = x;
             y0 = y + 1;
             landingX = x;
@@ -204,7 +179,6 @@ createRoom = function (x, y, direction) {
             var roomDim = roomDimensionsLeftDown(x - 1, y, width, height);
             width = roomDim.width;
             height = roomDim.height;
-            //width = getMaxRoomWidth(x - 1, y, width, height, false);
             x0 = x - width;
             y0 = y;
             landingX = x - 1;
@@ -220,6 +194,7 @@ createRoom = function (x, y, direction) {
 
 
     roomID = getRoomID();
+    console.log('creating room, x:' + x + ' y:' + y + ' direction:' + direction + ' ID:' + roomID)
     
     //set all tiles in the room to 'open' on all sides
     for (var i = 0; i < width; i++) {
