@@ -212,17 +212,29 @@ createRoom = function (x, y, direction) {
     }
     
     //go along walls, mark them.  Possibly as doors
-    for (var i = 0; i < width; i++) {
-        processBorderTile(x0 + i, y0);
-        processBorderTile(x0 + i, y0 + height - 1);
+    if (height > 1) {
+        for (var i = 0; i < width; i++) {
+            processBorderTile(x0 + i, y0);
+            if (height > 1) {
+                processBorderTile(x0 + i, y0 + height - 1);
+            }
+        }
     }
-    for (var i = 0; i < height; i++) {
-        processBorderTile(x0, y0 + i);
-        processBorderTile(x0 + width - 1, y0 + i)
+    if (width > 1) {
+        for (var i = 0; i < height; i++) {
+            processBorderTile(x0, y0 + i);
+            if (width > 1) {
+                processBorderTile(x0 + width - 1, y0 + i)
+            }
+        }
+    }
+    if (width === 1 && height === 1) {
+        processBorderTile(x0, y0);
     }
 
     //mark door to previous room
-    mapRooms[landingY][landingX].directions[(direction + 2) % 4] = 1;
+    mapRooms[landingY][landingX].directions[(direction + 2) % 4] = DOOR;
+    mapRooms[y][x].directions[direction] = DOOR;
 
     //return rooms for adding
     return true;
