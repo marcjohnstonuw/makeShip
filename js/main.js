@@ -17,13 +17,13 @@ REDUNDANT_DOOR = 0.87;
 var roomColors = {
     1: {r: 255, g: 0, b: 0},
     2: {r: 0, g: 255, b: 0},
-    3: {r: 0, g: 0, b: 255},
+    3: {r: 120, g: 120, b: 255},
     4: {r: 255, g: 255, b: 0},
     5: {r: 255, g: 0, b: 255},
     6: {r: 0, g: 255, b: 255},
     7: {r: 128, g: 0, b: 0},
     8: {r: 0, g: 128, b: 0},
-    9: {r: 0, g: 0, b: 128},
+    9: {r: 60, g: 60, b: 228},
     0: {r: 128, g: 128, b: 128}
 }
 
@@ -86,18 +86,49 @@ drawMap = function () {
                 if (mapRooms[i][j].directions[NORTH] === DOOR) {
                     ctx.fillStyle = 'orange';
                     ctx.fillRect(TILE_SIZE * j + 2, TILE_SIZE * i, TILE_SIZE - 4, 2);
+                } else if (mapRooms[i][j].directions[NORTH] === WALL) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(TILE_SIZE * j, TILE_SIZE * i);
+                    ctx.lineTo(TILE_SIZE * (j + 1), TILE_SIZE * i);
+                    ctx.stroke();
                 }
+
                 if (mapRooms[i][j].directions[SOUTH] === DOOR) {
                     ctx.fillStyle = 'orange';
                     ctx.fillRect(TILE_SIZE * j + 2, TILE_SIZE * (i + 1) -2, TILE_SIZE - 4, 2);
+                } else if (mapRooms[i][j].directions[SOUTH] === WALL) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(TILE_SIZE * j, TILE_SIZE * (i + 1));
+                    ctx.lineTo(TILE_SIZE * (j + 1), TILE_SIZE * (i + 1));
+                    ctx.stroke();
                 }
+
                 if (mapRooms[i][j].directions[WEST] === DOOR) {
                     ctx.fillStyle = 'orange';
                     ctx.fillRect(TILE_SIZE * j, TILE_SIZE * i + 2, 2, TILE_SIZE - 4);
+                } else if (mapRooms[i][j].directions[WEST] === WALL) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(TILE_SIZE * j, TILE_SIZE * i);
+                    ctx.lineTo(TILE_SIZE * j, TILE_SIZE * (i + 1));
+                    ctx.stroke();
                 }
+
                 if (mapRooms[i][j].directions[EAST] === DOOR) {
                     ctx.fillStyle = 'orange';
                     ctx.fillRect(TILE_SIZE * (j + 1) - 2, TILE_SIZE * i + 2, 2, TILE_SIZE - 4);
+                } else if (mapRooms[i][j].directions[EAST] === WALL) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(TILE_SIZE * (j + 1), TILE_SIZE * i);
+                    ctx.lineTo(TILE_SIZE * (j + 1), TILE_SIZE * (i + 1));
+                    ctx.stroke();
                 }
             }
             //ctx.strokeStyle = 'rgb(200,200,200)';
