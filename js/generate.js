@@ -5,32 +5,108 @@ var getRoomID = function () {
 };
 
 var getMaxRoomHeight = function (x, y, width, height, up) {
-    var ret = 1;
     var direction = up ? -1 : 1;
-    for (var i = direction; Math.abs(i) < height; i = i + direction) {
+    for (var i = 0; Math.abs(i) < height; i = i + direction) {
         for (var j = 0; j < width; j++) {
             if (mapRooms[y + i][x + j] instanceof Tile) {
                 return Math.abs(i);   
             }
         }
-        ret += 1;
     }
-    return Math.abs(height);
+    return height;
 };
 
 var getMaxRoomWidth = function (x, y, width, height, right) {
     var direction = right ? 1 : -1;
-    var ret = 1;
-    for (var i = direction; Math.abs(i) <= width; i = i + direction) {
+    for (var i = 0; Math.abs(i) <= width; i = i + direction) {
         for (var j = 0; j < height; j++) {
             if (mapRooms[y + j][x + i] instanceof Tile) {
                 return Math.abs(i);
             }
         }
-        ret += 1;
     }
-    return Math.abs(width);
+    return width;
 };
+
+roomDimensionsUpRight = function (x, y, width, height) {
+    var ret = {
+        width: width,
+        height: height
+    };
+    for (var i = 0; i < height; i++) {
+        if (mapRooms[y - i][x] instanceof Tile) {
+            ret.height = i;
+            break;
+        }
+        for (var j = 1; j < width; j++) {
+            if (mapRooms[y - i][x + j] instanceof Tile) {
+                ret.width = Math.min(ret.width, j);
+                break;
+            }
+        }
+    }
+    return ret;
+};
+
+roomDimensionDownRight = function (x, y, width, height) {
+    var ret = {
+        width: width,
+        height: height
+    };
+    for (var i = 0; i < height; i++) {
+        if (mapRooms[y + i][x] instanceof Tile) {
+            ret.height = i;
+            break;
+        }
+        for (var j = 0; j < width; j++) {
+            if (mapRooms[y + i][x + j] instanceof Tile) {
+                ret.width = Math.min(ret.width, j);
+                break;
+            }
+        }
+    }
+    return ret;
+};
+
+roomDimensionsRightDown = function (x, y, width, height) {
+    var ret = {
+        width: width,
+        height: height
+    };
+    for (var i = 0; i < width; i++) {
+        if (mapRooms[y][x + i] instanceof Tile) {
+            ret.width = i;
+            break;
+        }
+        for (var j = 0; j < height; j++) {
+            if (mapRooms[y + j][x + i] instanceof Tile) {
+                ret.height = Math.min(ret.height, j);
+                break;
+            }
+        }
+    }
+    return ret;
+};
+
+roomDimensionsLeftDown = function (x, y, width, height) {
+    var ret = {
+        width: width,
+        height: height
+    };
+    for (var i = 0; i < width; i++) {
+        if (mapRooms[y][x - i] instanceof Tile) {
+            ret.width = i;
+            break;
+        }
+        for (var j = 0; j < height; j++) {
+            if (mapRooms[y + j][x - i] instanceof Tile) {
+                ret.height = Math.min(ret.height, j);
+                break;
+            }
+        }
+    }
+    return ret;
+}
 
 var processBorderTile = function (x, y) {
     //north wall
@@ -81,6 +157,7 @@ var processBorderTile = function (x, y) {
 };
 
 createRoom = function (x, y, direction) {
+    console.log('creating room, x:' + x + ' y:' + y + ' direction:' + direction)
     var width = Math.floor(Math.random() * 4 + 3),
         height = Math.floor(Math.random() * 4 + 3),
         x0,
@@ -91,28 +168,43 @@ createRoom = function (x, y, direction) {
     
     switch (direction) {
         case NORTH:
-            height = getMaxRoomHeight(x, y, width, height, true);
+            var roomDim = roomDimensionsUpRight(x, y - 1, width, height);
+            width = roomDim.width;
+            height = roomDim.height;
+            //width = getMaxRoomWidth(x, y - 1, width, height, true);
+            //height = getMaxRoomHeight(x, y - 1, width, height, true);
             x0 = x;
             y0 = y - height;
             landingX = x;
             landingY = y - 1;
             break;
         case EAST:
-            width = getMaxRoomWidth(x, y, width, height, true);
+            var roomDim = roomDimensionsRightDown(x + 1, y, width, height);
+            height = roomDim.height;
+            width = roomDim.width;
+            //height = getMaxRoomHeight(x + 1, y, width, height, false);
+            //width = getMaxRoomWidth(x + 1, y, width, height, true);
             x0 = x + 1;
             y0 = y;
             landingX = x + 1;
             landingY = y;
             break;
         case SOUTH:
-            height = getMaxRoomHeight(x, y, width, height, false);
+            var roomDim = roomDimensionDownRight(x, y + 1, width, height);
+            width = roomDim.width;
+            height = roomDim.height;
+            //height = getMaxRoomHeight(x, y + 1, width, height, false);
+            //width = getMaxRoomWidth(x, y + 1, width, height, true);
             x0 = x;
             y0 = y + 1;
             landingX = x;
             landingY = y + 1;
             break;
         case WEST:
-            width = getMaxRoomWidth(x, y, width, height, false);
+            var roomDim = roomDimensionsLeftDown(x - 1, y, width, height);
+            width = roomDim.width;
+            height = roomDim.height;
+            //width = getMaxRoomWidth(x - 1, y, width, height, false);
             x0 = x - width;
             y0 = y;
             landingX = x - 1;
@@ -140,54 +232,10 @@ createRoom = function (x, y, direction) {
     for (var i = 0; i < width; i++) {
         processBorderTile(x0 + i, y0);
         processBorderTile(x0 + i, y0 + height - 1);
-        /*
-        if (Math.random() > 0.75) {
-            //possibly connect this room to the room above with another door, otherwise build another room
-            if (mapRooms[y0 - 1][x0 + i] instanceof Tile) { 
-                if (Math.random() > 0.9) {  
-                    mapRooms[y0][x0 + i].directions[NORTH] = 1;
-                    mapRooms[y0 - 1][x0 + i].directions[SOUTH] = 1;
-                } else {
-                    mapRooms[y0][x0 + i].directions[NORTH] = 0;  
-                }
-            } else { 
-                ret.push({x:x0 + i, y:y0, direction: NORTH}); 
-                mapRooms[y0][x0 + i].directions[NORTH] = 1;
-            }
-        } else {
-            mapRooms[y0][x0 + i].directions[NORTH] = 0;   
-        }
-        if (Math.random() > 0.75) {
-            //possibly connect this room to the room above with another door, otherwise build another room
-            if (mapRooms[y0 + height][x0 + i] instanceof Tile && Math.random() > 0.7) {
-                mapRooms[y0 + height - 1][x0 + i].directions[SOUTH] = 1;
-                mapRooms[y0 + height][x0 + i].directions[NORTH] = 1;
-            } else {
-                mapRooms[y0 + height - 1][x0 + i].directions[SOUTH] = 1;
-                ret.push({x:x0 + i, y:y0 + height - 1, direction: SOUTH});
-            }
-        } else {
-            mapRooms[y0 + height - 1][x0 + i].directions[SOUTH] = 0;
-        }
-        */
     }
     for (var i = 0; i < height; i++) {
         processBorderTile(x0, y0 + i);
         processBorderTile(x0 + width - 1, y0 + i)
-        /*
-        if (Math.random() > 0.75) {
-            mapRooms[y0 + i][x0].directions[WEST] = 1;
-            ret.push({x:x0, y:y0 + i, direction: WEST});
-        } else {
-            mapRooms[y0 + i][x0].directions[WEST] = 0;
-        }
-        if (Math.random() > 0.75) {
-            mapRooms[y0 + i][x0 + width - 1].directions[EAST] = 1;
-            ret.push({x:x0 + width - 1, y:y0 + i, direction: EAST});
-        } else {
-            mapRooms[y0 + i][x0 + width - 1].directions[EAST] = 0;
-        }
-        */
     }
 
     //mark door to previous room
