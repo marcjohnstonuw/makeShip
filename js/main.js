@@ -117,26 +117,25 @@ another = function (times) {
     drawMap();
     if (times > 0) {
         setTimeout(function () {another(times - 1)}, 0);
+    } else {
+        cleanup();
     }
 }
 
-
+cleanup = function () {
+    while (newDoors.length > 0) {
+        var door = newDoors.pop();
+        mapRooms[door.y][door.x].directions[door.direction] = WALL;
+    }
+};
 
 printMap();
 console.dir(newDoors);
 
 
 $(document).ready(function () {
-//start with cockpit
-mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
-createRoom(COCKPIT_X, COCKPIT_Y, EAST);
+    //start with cockpit
+    mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
+    createRoom(COCKPIT_X, COCKPIT_Y, EAST);
     another(100);
-
-    /*
-  if (newDoors.length === 0) break;
-    var nextRoom = newDoors.pop();
-    if (!createRoom(nextRoom.x, nextRoom.y, nextRoom.direction)) {
-        i--;
-    }
-    */
 });
