@@ -88,55 +88,87 @@ var processBorderTile = function (x, y) {
     //north wall
     if (y > 0) {
         //if this is an edge, maybe make a door to the next room, otherwise maybe make a new door
-        if (mapRooms[y-1][x] instanceof Tile && mapRooms[y][x].id !== mapRooms[y-1][x].id) {
-            if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[NORTH] = mapRooms[y-1][x].directions[SOUTH] = DOOR;
-            } else {
-                mapRooms[y][x].directions[NORTH] = mapRooms[y-1][x].directions[SOUTH] = WALL;
+        if (mapRooms[y-1][x] instanceof Tile) {
+            if (mapRooms[y][x].id !== mapRooms[y-1][x].id) {
+                if (Math.random() > REDUNDANT_DOOR) {
+                    mapRooms[y][x].directions[NORTH] = mapRooms[y-1][x].directions[SOUTH] = DOOR;
+                } else {
+                    mapRooms[y][x].directions[NORTH] = mapRooms[y-1][x].directions[SOUTH] = WALL;
+                }
             }
-        } else if (!(mapRooms[y-1][x] instanceof Tile) && Math.random() > NEW_DOOR) {
-            mapRooms[y][x].directions[NORTH] = 1;
-            newDoors.unshift({x:x, y:y, direction: NORTH}); 
+        } else {
+            if (Math.random() > NEW_DOOR) {
+                mapRooms[y][x].directions[NORTH] = DOOR;
+                newDoors.unshift({x:x, y:y, direction: NORTH}); 
+            } else {
+                mapRooms[y][x].directions[NORTH] = WALL;
+            }
         }
+    } else {
+        mapRooms[y][x].directions[NORTH] = WALL;
     }
     //south wall
     if (y < MAP_HEIGHT - 1) {
-        if (mapRooms[y+1][x] instanceof Tile && mapRooms[y][x].id !== mapRooms[y+1][x].id) {
-            if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[SOUTH] = mapRooms[y+1][x].directions[NORTH] = DOOR;
-            } else {
-                mapRooms[y][x].directions[SOUTH] = mapRooms[y+1][x].directions[NORTH] = WALL;
+        if (mapRooms[y+1][x] instanceof Tile) {
+            if (mapRooms[y][x].id !== mapRooms[y+1][x].id) {
+                if (Math.random() > REDUNDANT_DOOR) {
+                    mapRooms[y][x].directions[SOUTH] = mapRooms[y+1][x].directions[NORTH] = DOOR;
+                } else {
+                    mapRooms[y][x].directions[SOUTH] = mapRooms[y+1][x].directions[NORTH] = WALL;
+                }
             }
-        } else if (!(mapRooms[y+1][x] instanceof Tile) && Math.random() > NEW_DOOR) {
-            mapRooms[y][x].directions[SOUTH] = 1;
-            newDoors.unshift({x:x, y:y, direction: SOUTH}); 
+        } else { 
+            if (Math.random() > NEW_DOOR) {
+                mapRooms[y][x].directions[SOUTH] = DOOR;
+                newDoors.unshift({x:x, y:y, direction: SOUTH}); 
+            } else {
+                mapRooms[y][x].directions[SOUTH] = WALL;
+            }
         }
+    } else {
+        mapRooms[y][x].directions[SOUTH] = WALL;
     }
     //east wall
     if (x < MAP_WIDTH - 1) {
-        if (mapRooms[y][x+1] instanceof Tile && mapRooms[y][x].id !== mapRooms[y][x+1].id) {
-            if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[EAST] = mapRooms[y][x+1].directions[WEST] = DOOR;
-            } else {
-                mapRooms[y][x].directions[EAST] = mapRooms[y][x+1].directions[WEST] = WALL;
+        if (mapRooms[y][x+1] instanceof Tile) {
+            if (mapRooms[y][x].id !== mapRooms[y][x+1].id) {
+                if (Math.random() > REDUNDANT_DOOR) {
+                    mapRooms[y][x].directions[EAST] = mapRooms[y][x+1].directions[WEST] = DOOR;
+                } else {
+                    mapRooms[y][x].directions[EAST] = mapRooms[y][x+1].directions[WEST] = WALL;
+                }
             }
-        } else if (!(mapRooms[y][x+1] instanceof Tile) && Math.random() > NEW_DOOR) {
-            mapRooms[y][x].directions[EAST] = 1;
-            newDoors.unshift({x:x, y:y, direction: EAST}); 
+        } else {
+            if (Math.random() > NEW_DOOR) {
+                mapRooms[y][x].directions[EAST] = DOOR;
+                newDoors.unshift({x:x, y:y, direction: EAST}); 
+            } else {
+                mapRooms[y][x].directions[EAST] = WALL;
+            }
         }
+    } else {
+        mapRooms[y][x].directions[EAST] = WALL;
     }
     //west wall
     if (x > 0) {
-        if (mapRooms[y][x-1] instanceof Tile && mapRooms[y][x-1].id !== mapRooms[y][x].id) {
-            if (Math.random() > REDUNDANT_DOOR) {
-                mapRooms[y][x].directions[WEST] = mapRooms[y][x-1].directions[EAST] = DOOR;
-            } else {
-                mapRooms[y][x].directions[WEST] = mapRooms[y][x-1].directions[EAST] = WALL;
+        if (mapRooms[y][x-1] instanceof Tile) {
+            if (mapRooms[y][x-1].id !== mapRooms[y][x].id) {
+                if (Math.random() > REDUNDANT_DOOR) {
+                    mapRooms[y][x].directions[WEST] = mapRooms[y][x-1].directions[EAST] = DOOR;
+                } else {
+                    mapRooms[y][x].directions[WEST] = mapRooms[y][x-1].directions[EAST] = WALL;
+                }
             }
-        } else if (!(mapRooms[y][x-1] instanceof Tile) && Math.random() > NEW_DOOR) {
-            mapRooms[y][x].directions[WEST] = 1;
-            newDoors.unshift({x:x, y:y, direction: WEST}); 
+        } else {
+            if (Math.random() > NEW_DOOR) {
+                mapRooms[y][x].directions[WEST] = DOOR;
+                newDoors.unshift({x:x, y:y, direction: WEST}); 
+            } else {
+                mapRooms[y][x].directions[WEST] = WALL;
+            }
         }
+    } else {
+        mapRooms[y][x].directions[WEST] = WALL;
     }
 };
 
@@ -212,24 +244,31 @@ createRoom = function (x, y, direction) {
     }
     
     //go along walls, mark them.  Possibly as doors
-    if (height > 1) {
+    if (width === 1 && height === 1) {
+        processBorderTile(x0, y0);
+    }
+    else if (height === 1) {
+        for (var i = 0; i < width; i++) {
+            processBorderTile(x0 + i, y0);
+        }
+    }
+    else if (width === 1) {
+        for (var i = 0; i < height; i++) {
+            processBorderTile(x0, y0 + i);
+        }
+    } else {
         for (var i = 0; i < width; i++) {
             processBorderTile(x0 + i, y0);
             if (height > 1) {
                 processBorderTile(x0 + i, y0 + height - 1);
             }
         }
-    }
-    if (width > 1) {
         for (var i = 0; i < height; i++) {
             processBorderTile(x0, y0 + i);
             if (width > 1) {
                 processBorderTile(x0 + width - 1, y0 + i)
             }
         }
-    }
-    if (width === 1 && height === 1) {
-        processBorderTile(x0, y0);
     }
 
     //mark door to previous room

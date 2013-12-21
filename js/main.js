@@ -165,6 +165,8 @@ console.dir(newDoors);
 
 
 $(document).ready(function () {
+    $('#mainCanvas').width(MAP_WIDTH * TILE_SIZE + 20 + 'px')
+        .height(MAP_HEIGHT * TILE_SIZE + 20 + 'px');
     //start with cockpit
     mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
     createRoom(COCKPIT_X, COCKPIT_Y, EAST);
