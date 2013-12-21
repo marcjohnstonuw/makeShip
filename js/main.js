@@ -8,6 +8,9 @@ MAP_HEIGHT = 30,
 COCKPIT_X = 5,
 COCKPIT_Y = 10,
 TILE_SIZE = 20;
+OFFSET_X = 10;
+OFFSET_Y = 10;
+mapDragging = false;
 
 newDoors = [];
 
@@ -74,60 +77,61 @@ drawMap = function () {
     if (canvas.getContext){
       var ctx = canvas.getContext('2d');
     }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (var i = 0; i < MAP_HEIGHT; i++) {
         for (var j = 0; j < MAP_WIDTH; j++) {
             if (mapRooms[i][j] instanceof Tile) {
                 var id = mapRooms[i][j].id % 10;
                 ctx.fillStyle = 'rgb(' + roomColors[id].r + ',' + roomColors[id].g + ',' + roomColors[id].b + ')';
-                ctx.fillRect(TILE_SIZE * j, TILE_SIZE * i, TILE_SIZE, TILE_SIZE);
+                ctx.fillRect(OFFSET_X + TILE_SIZE * j, OFFSET_Y + TILE_SIZE * i, TILE_SIZE, TILE_SIZE);
 
                 //doors
                 if (mapRooms[i][j].directions[NORTH] === DOOR) {
                     ctx.fillStyle = 'orange';
-                    ctx.fillRect(TILE_SIZE * j + 2, TILE_SIZE * i, TILE_SIZE - 4, 2);
+                    ctx.fillRect(OFFSET_X + TILE_SIZE * j + 2, OFFSET_Y + TILE_SIZE * i, TILE_SIZE - 4, 2);
                 } else if (mapRooms[i][j].directions[NORTH] === WALL) {
                     ctx.beginPath();
                     ctx.strokeStyle = 'black';
                     ctx.lineWidth = 1;
-                    ctx.moveTo(TILE_SIZE * j, TILE_SIZE * i);
-                    ctx.lineTo(TILE_SIZE * (j + 1), TILE_SIZE * i);
+                    ctx.moveTo(OFFSET_X + TILE_SIZE * j, OFFSET_Y + TILE_SIZE * i);
+                    ctx.lineTo(OFFSET_X + TILE_SIZE * (j + 1), OFFSET_Y + TILE_SIZE * i);
                     ctx.stroke();
                 }
 
                 if (mapRooms[i][j].directions[SOUTH] === DOOR) {
                     ctx.fillStyle = 'orange';
-                    ctx.fillRect(TILE_SIZE * j + 2, TILE_SIZE * (i + 1) -2, TILE_SIZE - 4, 2);
+                    ctx.fillRect(OFFSET_X + TILE_SIZE * j + 2, OFFSET_Y + TILE_SIZE * (i + 1) -2, TILE_SIZE - 4, 2);
                 } else if (mapRooms[i][j].directions[SOUTH] === WALL) {
                     ctx.beginPath();
                     ctx.strokeStyle = 'black';
                     ctx.lineWidth = 1;
-                    ctx.moveTo(TILE_SIZE * j, TILE_SIZE * (i + 1));
-                    ctx.lineTo(TILE_SIZE * (j + 1), TILE_SIZE * (i + 1));
+                    ctx.moveTo(OFFSET_X + TILE_SIZE * j, OFFSET_Y + TILE_SIZE * (i + 1));
+                    ctx.lineTo(OFFSET_X + TILE_SIZE * (j + 1), OFFSET_Y + TILE_SIZE * (i + 1));
                     ctx.stroke();
                 }
 
                 if (mapRooms[i][j].directions[WEST] === DOOR) {
                     ctx.fillStyle = 'orange';
-                    ctx.fillRect(TILE_SIZE * j, TILE_SIZE * i + 2, 2, TILE_SIZE - 4);
+                    ctx.fillRect(OFFSET_X + TILE_SIZE * j, OFFSET_Y + TILE_SIZE * i + 2, 2, TILE_SIZE - 4);
                 } else if (mapRooms[i][j].directions[WEST] === WALL) {
                     ctx.beginPath();
                     ctx.strokeStyle = 'black';
                     ctx.lineWidth = 1;
-                    ctx.moveTo(TILE_SIZE * j, TILE_SIZE * i);
-                    ctx.lineTo(TILE_SIZE * j, TILE_SIZE * (i + 1));
+                    ctx.moveTo(OFFSET_X + TILE_SIZE * j, OFFSET_Y + TILE_SIZE * i);
+                    ctx.lineTo(OFFSET_X + TILE_SIZE * j, OFFSET_Y + TILE_SIZE * (i + 1));
                     ctx.stroke();
                 }
 
                 if (mapRooms[i][j].directions[EAST] === DOOR) {
                     ctx.fillStyle = 'orange';
-                    ctx.fillRect(TILE_SIZE * (j + 1) - 2, TILE_SIZE * i + 2, 2, TILE_SIZE - 4);
+                    ctx.fillRect(OFFSET_X + TILE_SIZE * (j + 1) - 2, OFFSET_Y + TILE_SIZE * i + 2, 2, TILE_SIZE - 4);
                 } else if (mapRooms[i][j].directions[EAST] === WALL) {
                     ctx.beginPath();
                     ctx.strokeStyle = 'black';
                     ctx.lineWidth = 1;
-                    ctx.moveTo(TILE_SIZE * (j + 1), TILE_SIZE * i);
-                    ctx.lineTo(TILE_SIZE * (j + 1), TILE_SIZE * (i + 1));
+                    ctx.moveTo(OFFSET_X + TILE_SIZE * (j + 1), OFFSET_Y + TILE_SIZE * i);
+                    ctx.lineTo(OFFSET_X + TILE_SIZE * (j + 1), OFFSET_Y + TILE_SIZE * (i + 1));
                     ctx.stroke();
                 }
             }
@@ -167,6 +171,28 @@ console.dir(newDoors);
 $(document).ready(function () {
     $('#mainCanvas').width(MAP_WIDTH * TILE_SIZE + 20 + 'px')
         .height(MAP_HEIGHT * TILE_SIZE + 20 + 'px');
+    $('#mainCanvas').mousedown(function (e) {
+        mapDragging = true;
+        mouseDownX = e.pageX;
+        mouseDownY = e.pageY;
+        prevOffsetX = OFFSET_X;
+        prevOffsetY = OFFSET_Y;
+    });
+    $(window).mouseup(function () {
+        mapDragging = false;
+        console.log(OFFSET_X + ' final! ' + OFFSET_Y);
+    })
+    $(window).mousemove(function (e) {
+        if (mapDragging) {
+            var deltaX = e.pageX - mouseDownX;
+            var deltaY = e.pageY - mouseDownY;
+            OFFSET_X = prevOffsetX + deltaX;
+            OFFSET_Y = prevOffsetY + deltaY;
+            console.log(deltaX + ' ' + deltaY);
+            drawMap();
+        }
+    })
+
     //start with cockpit
     mapRooms[COCKPIT_Y][COCKPIT_X] = new Tile(0, [WALL, DOOR, WALL, WALL]);
     createRoom(COCKPIT_X, COCKPIT_Y, EAST);
